@@ -44,10 +44,109 @@ pip install -r requirements.txt
 cd backend && python main.py
 ```
 
+## CLI Usage
+
+The CLI tool (`cli.py`) gives you the same workflow as the web UI, entirely from the terminal. Activate the venv first:
+
+```bash
+source .venv/bin/activate
+```
+
+### 1. Find a Location
+
+**By place name** (geocoded via OpenStreetMap):
+```bash
+python cli.py --place "Palm Jumeirah, Dubai"
+```
+If multiple results are found, you'll be prompted to pick one.
+
+**By GPS coordinates:**
+```bash
+python cli.py --lat 25.1124 --lon 55.139
+```
+
+**Interactively** (just run with no args):
+```bash
+python cli.py
+```
+You'll be prompted to choose between name search and coordinates.
+
+### 2. View the Location
+
+After resolving the location, the CLI shows the coordinates, bounding box, and area size. It then offers to open the location in your browser on OpenStreetMap:
+
+```
+  📍 Location
+  ────────────────────────────────────
+  Name     : Palm Jumeirah, Dubai, UAE
+  Latitude : 25.112400
+  Longitude: 55.139000
+  Radius   : 2.5 km  (5.0 × 5.0 km box)
+  Bbox     : [55.1145, 25.0899, 55.1635, 25.1349]
+
+  Open location in browser? [Y/n]:
+```
+
+Use `--no-map` to skip this step.
+
+### 3. Configure Parameters
+
+Parameters can be passed as flags or entered interactively when omitted:
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--start` | Start date (YYYY-MM-DD) | 2022-01-01 |
+| `--end` | End date (YYYY-MM-DD) | Today |
+| `--interval` | `monthly`, `quarterly`, or `yearly` | monthly |
+| `--cloud` | Max cloud cover % (0–100) | 20 |
+| `--radius` | Area radius in km | 2.5 |
+| `--fps` | Video playback speed | 3 |
+| `--output` / `-o` | Output directory | ./output |
+
+### 4. Generate
+
+The CLI shows a progress bar as it queries, downloads, and compiles:
+
+```
+  [██████████████████░░░░░░░░░░░░]  60.0%  Processing frame 7/12 (2023-07)
+```
+
+On completion:
+```
+  ✓ Timelapse generated successfully!
+
+  📹 Video: /path/to/output/timelapse_a1b2c3d4.mp4
+  📦 Size : 2.3 MB
+```
+
+Use `--open` to automatically open the video after generation.
+
+### Example Commands
+
+```bash
+# Interactive mode — prompted for everything
+python cli.py
+
+# Search by name, all defaults, skip confirmations
+python cli.py --place "Aral Sea" -y
+
+# GPS coords, yearly interval over 5 years, larger area
+python cli.py --lat 45.0 --lon 58.5 --start 2019-01-01 --end 2024-01-01 \
+  --interval yearly --radius 5 --cloud 30
+
+# Quarterly timelapse of Las Vegas, auto-open result
+python cli.py --place "Las Vegas" --start 2020-01-01 --interval quarterly --open
+
+# Full non-interactive (CI/scripting friendly)
+python cli.py --lat 31.23 --lon 121.47 --start 2021-01-01 --end 2023-12-31 \
+  --interval monthly --cloud 15 --radius 3 --fps 4 -o ./videos --no-map -y
+```
+
 ## Project Structure
 
 ```
 sentinel-timelapse/
+├── cli.py               # Command-line interface
 ├── backend/
 │   ├── main.py          # FastAPI server & API endpoints
 │   ├── timelapse.py     # Core STAC query, download & video compilation
