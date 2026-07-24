@@ -161,6 +161,7 @@ def collect_params_interactive(args) -> dict:
     cloud = args.cloud if args.cloud is not None else int(ask("Max cloud cover %", "20"))
     radius = args.radius if args.radius is not None else float(ask("Radius in km", "2.5"))
     fps = args.fps if args.fps is not None else int(ask("Playback speed (fps)", "3"))
+    show_date = not args.no_date if args.no_date is not None else ask("Show date overlay? (y/n)", "y").lower() in ("y", "yes", "true", "1")
     out_dir = args.output or ask("Output directory", os.path.join(SCRIPT_DIR, "output"))
 
     print()
@@ -171,6 +172,7 @@ def collect_params_interactive(args) -> dict:
         "cloud_cover_max": int(cloud),
         "radius_km": float(radius),
         "fps": int(fps),
+        "show_date": show_date,
         "output_dir": out_dir,
     }
 
@@ -203,6 +205,7 @@ examples:
     cfg.add_argument("--cloud", type=int, help="Max cloud cover %% (0–100, default: 20)")
     cfg.add_argument("--radius", type=float, help="Area radius in km (default: 2.5)")
     cfg.add_argument("--fps", type=int, help="Playback speed in fps (default: 3)")
+    cfg.add_argument("--no-date", action="store_true", default=None, help="Hide the date/year overlay stamp on images")
 
     out = p.add_argument_group("Output")
     out.add_argument("--output", "-o", type=str, help="Output directory (default: ./output)")
@@ -268,6 +271,7 @@ def main():
     print(f"  {C.GREEN}Cloud max:{C.RESET} {params['cloud_cover_max']}%")
     print(f"  {C.GREEN}Radius   :{C.RESET} {params['radius_km']} km")
     print(f"  {C.GREEN}FPS      :{C.RESET} {params['fps']}")
+    print(f"  {C.GREEN}Show Date:{C.RESET} {params['show_date']}")
     print(f"  {C.GREEN}Output   :{C.RESET} {params['output_dir']}")
     print()
 
@@ -293,6 +297,7 @@ def main():
             cloud_cover_max=params["cloud_cover_max"],
             radius_km=params["radius_km"],
             fps=params["fps"],
+            show_date=params["show_date"],
             progress_callback=progress_callback,
         )
     except ValueError as e:

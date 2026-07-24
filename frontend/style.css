@@ -317,6 +317,61 @@ input[type=range]::-moz-range-thumb {
   box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
 
+/* Toggle Switch */
+.form-group-toggle {
+  padding-top: 4px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: #1e293b;
+  border-radius: 11px;
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.toggle-label input:checked + .toggle-switch {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.toggle-label input:checked + .toggle-switch::after {
+  transform: translateX(18px);
+  background: #0a0e17;
+}
+
 /* Buttons */
 .btn {
   padding: 10px 20px;

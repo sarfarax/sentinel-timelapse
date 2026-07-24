@@ -41,6 +41,7 @@ class TimelapseGenerator:
         radius_km: float = 2.5,
         frame_size: Tuple[int, int] = (720, 720),
         fps: int = 3,
+        show_date: bool = True,
         progress_callback: Optional[Callable[[str, float], None]] = None
     ) -> str:
         """
@@ -56,6 +57,7 @@ class TimelapseGenerator:
             radius_km: Radius in km for the bounding box.
             frame_size: Output frame dimensions (width, height).
             fps: Frames per second for the output video.
+            show_date: Whether to overlay date/year stamp on each frame.
             progress_callback: Optional callback for progress updates.
             
         Returns:
@@ -183,53 +185,54 @@ class TimelapseGenerator:
                     # Resize
                     img = img.resize(frame_size, Image.Resampling.LANCZOS)
                     
-                    # Draw date stamp overlay
-                    draw = ImageDraw.Draw(img)
-                    
-                    # Try to use a better font, default to basic if not available
-                    try:
-                        font = ImageFont.truetype("arial.ttf", 28)
-                    except IOError:
-                        font = ImageFont.load_default()
+                    # Draw date stamp overlay if enabled
+                    if show_date:
+                        draw = ImageDraw.Draw(img)
                         
-                    # Parse date to pretty format
-                    dt = item.datetime
-                    date_str = dt.strftime("%B %Y")
-                    
-                    # Get text size for background rectangle
-                    if hasattr(font, 'getbbox'):
-                        f_left, f_top, f_right, f_bottom = font.getbbox(date_str)
-                        text_width = f_right - f_left
-                        text_height = f_bottom - f_top
-                    else:
-                        text_width, text_height = draw.textsize(date_str, font=font)
+                        # Try to use a better font, default to basic if not available
+                        try:
+                            font = ImageFont.truetype("arial.ttf", 28)
+                        except IOError:
+                            font = ImageFont.load_default()
+                            
+                        # Parse date to pretty format
+                        dt = item.datetime
+                        date_str = dt.strftime("%B %Y")
                         
-                    margin = 10
-                    rect_x0 = margin
-                    rect_y0 = frame_size[1] - text_height - 2 * margin
-                    rect_x1 = rect_x0 + text_width + 2 * margin
-                    rect_y1 = frame_size[1] - margin
-                    
-                    # Create transparent overlay for rectangle
-                    overlay = Image.new('RGBA', img.size, (255, 255, 255, 0))
-                    overlay_draw = ImageDraw.Draw(overlay)
-                    overlay_draw.rectangle(
-                        [rect_x0, rect_y0, rect_x1, rect_y1],
-                        fill=(0, 0, 0, 180)
-                    )
-                    
-                    img = img.convert('RGBA')
-                    img = Image.alpha_composite(img, overlay)
-                    
-                    draw = ImageDraw.Draw(img)
-                    draw.text(
-                        (rect_x0 + margin, rect_y0 + margin/2),
-                        date_str,
-                        font=font,
-                        fill=(255, 255, 255, 255)
-                    )
-                    
-                    img = img.convert('RGB')
+                        # Get text size for background rectangle
+                        if hasattr(font, 'getbbox'):
+                            f_left, f_top, f_right, f_bottom = font.getbbox(date_str)
+                            text_width = f_right - f_left
+                            text_height = f_bottom - f_top
+                        else:
+                            text_width, text_height = draw.textsize(date_str, font=font)
+                            
+                        margin = 10
+                        rect_x0 = margin
+                        rect_y0 = frame_size[1] - text_height - 2 * margin
+                        rect_x1 = rect_x0 + text_width + 2 * margin
+                        rect_y1 = frame_size[1] - margin
+                        
+                        # Create transparent overlay for rectangle
+                        overlay = Image.new('RGBA', img.size, (255, 255, 255, 0))
+                        overlay_draw = ImageDraw.Draw(overlay)
+                        overlay_draw.rectangle(
+                            [rect_x0, rect_y0, rect_x1, rect_y1],
+                            fill=(0, 0, 0, 180)
+                        )
+                        
+                        img = img.convert('RGBA')
+                        img = Image.alpha_composite(img, overlay)
+                        
+                        draw = ImageDraw.Draw(img)
+                        draw.text(
+                            (rect_x0 + margin, rect_y0 + margin/2),
+                            date_str,
+                            font=font,
+                            fill=(255, 255, 255, 255)
+                        )
+                        
+                        img = img.convert('RGB')
                     frames.append(np.array(img))
                     
             except Exception as e:

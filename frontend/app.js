@@ -181,7 +181,8 @@ async function generateTimelapse() {
     interval: document.getElementById('interval').value,
     cloud_cover_max: parseInt(document.getElementById('cloud-cover').value),
     radius_km: parseFloat(document.getElementById('radius').value),
-    fps: parseInt(document.getElementById('fps').value)
+    fps: parseInt(document.getElementById('fps').value),
+    show_date: document.getElementById('show-date').checked
   };
 
   // UI Updates

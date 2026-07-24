@@ -29,6 +29,7 @@ class TimelapseRequest(BaseModel):
     cloud_cover_max: int = 20
     radius_km: float = 2.5
     fps: int = 3
+    show_date: bool = True
 
 def process_timelapse_job(job_id: str, req: TimelapseRequest):
     """Background task to generate the timelapse."""
@@ -54,6 +55,7 @@ def process_timelapse_job(job_id: str, req: TimelapseRequest):
             cloud_cover_max=req.cloud_cover_max,
             radius_km=req.radius_km,
             fps=req.fps,
+            show_date=req.show_date,
             progress_callback=progress_callback
         )
         
