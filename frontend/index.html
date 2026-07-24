@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel Timelapse Generator</title>
+  <meta name="description" content="Visualize Earth's transformation through satellite imagery">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-icon">🛰️</div>
+      <div>
+        <h1>Sentinel Timelapse</h1>
+        <p class="subtitle">Visualize Earth's transformation through satellite imagery</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-grid">
+      <!-- Left: Map Panel -->
+      <section class="card map-panel">
+        <h2 class="card-title">📍 Select Location</h2>
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search for a place (e.g. Dubai Palm Islands)..." />
+          <button id="search-btn" class="btn btn-accent">Search</button>
+        </div>
+        <div id="map"></div>
+        <div class="coordinates-display">
+          <span id="coord-display">Click on the map or search for a location</span>
+        </div>
+        <!-- Quick-start suggestion chips -->
+        <div class="suggestion-chips">
+          <button class="chip" data-lat="25.1124" data-lon="55.1390" data-label="Palm Jumeirah, Dubai">🌴 Palm Jumeirah</button>
+          <button class="chip" data-lat="36.1699" data-lon="-115.1398" data-label="Las Vegas, USA">🎰 Las Vegas</button>
+          <button class="chip" data-lat="45.0" data-lon="58.5" data-label="Aral Sea">🌊 Aral Sea</button>
+          <button class="chip" data-lat="31.2304" data-lon="121.4737" data-label="Shanghai, China">🏙️ Shanghai</button>
+        </div>
+      </section>
+
+      <!-- Right: Settings Panel -->
+      <section class="card settings-panel">
+        <h2 class="card-title">⚙️ Configuration</h2>
+        
+        <div class="form-group">
+          <label for="start-date">Start Date</label>
+          <input type="date" id="start-date" value="2021-01-01" />
+        </div>
+        
+        <div class="form-group">
+          <label for="end-date">End Date</label>
+          <input type="date" id="end-date" />
+        </div>
+        
+        <div class="form-group">
+          <label for="interval">Capture Interval</label>
+          <select id="interval">
+            <option value="monthly" selected>Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="cloud-cover">Max Cloud Cover: <span id="cloud-value">20</span>%</label>
+          <input type="range" id="cloud-cover" min="0" max="100" value="20" />
+        </div>
+        
+        <div class="form-group">
+          <label for="radius">Area Radius: <span id="radius-value">2.5</span> km</label>
+          <input type="range" id="radius" min="1" max="10" step="0.5" value="2.5" />
+        </div>
+        
+        <div class="form-group">
+          <label for="fps">Playback Speed: <span id="fps-value">3</span> fps</label>
+          <input type="range" id="fps" min="1" max="10" value="3" />
+        </div>
+        
+        <button id="generate-btn" class="btn btn-primary btn-generate" disabled>
+          <span class="btn-text">Generate Timelapse</span>
+          <span class="btn-icon">▶</span>
+        </button>
+      </section>
+    </main>
+
+    <!-- Progress Section (hidden initially) -->
+    <section id="progress-section" class="card progress-section hidden">
+      <h2 class="card-title">🔄 Generating Timelapse</h2>
+      <div class="progress-info">
+        <span id="progress-step">Initializing...</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+    </section>
+
+    <!-- Result Section (hidden initially) -->
+    <section id="result-section" class="card result-section hidden">
+      <h2 class="card-title">🎬 Your Timelapse</h2>
+      <div class="video-container">
+        <video id="result-video" controls loop autoplay muted></video>
+      </div>
+      <div class="result-actions">
+        <a id="download-btn" class="btn btn-accent" download>⬇ Download Video</a>
+        <button id="new-btn" class="btn btn-secondary">🔄 Generate Another</button>
+      </div>
+    </section>
+
+    <!-- Error Section (hidden initially) -->
+    <section id="error-section" class="card error-section hidden">
+      <h2 class="card-title">⚠️ Error</h2>
+      <p id="error-message"></p>
+      <button id="error-dismiss-btn" class="btn btn-secondary">Try Again</button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Powered by <strong>Copernicus Sentinel-2</strong> via Microsoft Planetary Computer</p>
+    </footer>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <!-- App JS -->
+  <script src="app.js"></script>
+</body>
+</html>
